@@ -16,7 +16,7 @@ export class ConfigService {
         return this.configModel.find().exec();
     }
 
-    // async findOne(): Promise<Config> {
-    //     return this.configModel.find().exec();
-    // }
+    async findOne(service: string): Promise<Config> {
+        return this.configModel.findOne({service: service}).exec();
+    }
 }

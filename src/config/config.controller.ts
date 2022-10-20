@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post } from "@nestjs/common";
 import { Config } from "./config.schema";
 import { ConfigService } from "./config.service";
+import * as mapper from "src/mapper/mapper"
 
 @Controller("configs")
 export class ConfigController {
@@ -11,9 +12,9 @@ export class ConfigController {
         return await this.configService.findAll();
     }
 
-    @Get()
-    async findOne(): Promise<Config[]> {
-        return;
+    @Get(':id')
+    async findOne(@Param() params): Promise<any> {
+        return mapper.toConfigData(await this.configService.findOne(params.id));
     }
 
     @Post()

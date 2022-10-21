@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Put } from "@nestjs/common";
 import { Config } from "./config.schema";
 import { ConfigService } from "./config.service";
 import * as mapper from "src/mapper/mapper"
@@ -20,5 +20,10 @@ export class ConfigController {
     @Post()
     async create(@Body() body): Promise<Config> {
         return await this.configService.create(body);
+    }
+
+    @Put()
+    async updateOne(@Body() body): Promise<Config> {
+        return await this.configService.updateOne(body)
     }
 }

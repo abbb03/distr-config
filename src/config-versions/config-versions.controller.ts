@@ -37,7 +37,7 @@ export class ConfigVersionsController {
     }
 
     @Delete()
-    async delete(): Promise<ConfigVersionsDocument> {
-        return
+    async delete(@Query('service') service: string): Promise<ConfigVersionsDocument> {
+        return await this.configVersionsService.delete(service);
     }
 }

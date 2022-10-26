@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import mongoose, { Model } from "mongoose";
+import { Model } from "mongoose";
 import { ConfigVersions, ConfigVersionsDocument } from "src/config-versions/config-versions.schema";
 import { ConfigDto } from "src/config/config.dto";
 import { Config } from "src/config/config.schema";
@@ -27,8 +27,18 @@ export class ConfigVersionsService {
         return await (await this.configVersionsModel.create(configVersions)).save();
     }
 
-    async delete() {
+    async delete(service: string): Promise<ConfigVersionsDocument> {
+        const config = await this.configVersionsModel.findOne({service: service});
+        if (!config) {
+            throw new BadRequestException('Config not found');
+        }
 
+        const curDate = new Date();
+        const difference = (config.lastUpdate.getTime() - curDate.getTime()) / (1000 * 3600);
+        if (difference < 24) {
+            throw new BadRequestException('Currently config is used');
+        }
+        return this.configVersionsModel.findOneAndDelete({service: service});
     }
 
     async update(configDto: ConfigDto): Promise<ConfigVersionsDocument> {
@@ -77,7 +87,7 @@ export class ConfigVersionsService {
         return configVersion.save();
     }
 
-    async findAll(): Promise<ConfigVersionsDocument[]> {
+    async findAllConfigVersions(): Promise<ConfigVersionsDocument[]> {
         return this.configVersionsModel.find();
     }
 }

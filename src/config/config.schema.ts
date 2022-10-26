@@ -7,6 +7,9 @@ export type ConfigDocument = Config & Document;
 export class Config {
     @Prop({ required: true, type: mongoose.Schema.Types.Mixed })
     data: Mixed;
+
+    @Prop({ type: Number, default: 1})
+    version: number;
 }
 
 export const ConfigSchema = SchemaFactory.createForClass(Config);

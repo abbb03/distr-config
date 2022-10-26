@@ -2,9 +2,9 @@ import { Prop } from "@nestjs/mongoose";
 import mongoose, { Mixed } from "mongoose";
 
 export class ConfigDto {
-    @Prop({ type: String, required: true, dropDups: true })
+    @Prop({ type: String, required: true })
     service: string;
-    
-    @Prop({ required: true, type: mongoose.Schema.Types.Mixed })
+
+    @Prop({ type: mongoose.Schema.Types.Mixed, required: true })
     data: Mixed;
 }

@@ -11,11 +11,11 @@ export class ConfigVersions {
     @Prop({ type: [ConfigSchema], required: true})
     configs: Config[];
 
-    @Prop({ type: Number, unique: true, required: true, default: 1 })
+    @Prop({ type: Number, required: true, default: 1 })
     currentVersion: number;
 
     @Prop({type: Date, required: true, default: new Date()})
-    lastUpdate: Date;
+    expireTime: Date;
 }
 
 export const ConfigVersionsSchema = SchemaFactory.createForClass(ConfigVersions);

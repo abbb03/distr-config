@@ -5,22 +5,27 @@ import { ConfigVersions, ConfigVersionsDocument } from "src/config-versions/conf
 import { ConfigDto } from "src/config/config.dto";
 import { Config } from "src/config/config.schema";
 import { ConfigService } from "src/config/config.service";
+import { hoursToMillis } from "src/utils/toMillis";
 
 @Injectable()
 export class ConfigVersionsService {
+    private readonly expirationTime: number = hoursToMillis(24);
+
     constructor(
         @InjectModel(ConfigVersions.name) private configVersionsModel: Model<ConfigVersionsDocument>,
-        private readonly configService: ConfigService
+        private readonly configService: ConfigService,
     ) {}
 
     async create(configDto: ConfigDto): Promise<ConfigVersionsDocument> {
         const find = await this.configVersionsModel.findOne({service: configDto.service});
         if (find) {
-            throw new BadRequestException('Config for this service already exists')
+            throw new BadRequestException('The config for this service already exists')
         }
 
-        let configVersions = new this.configVersionsModel();
+        let configVersions: ConfigVersionsDocument = new this.configVersionsModel();
         let config: Config = await this.configService.create(configDto);
+        this.setExpireTime(configVersions);
+        
         configVersions.service = configDto.service;
         configVersions.configs.push(config);
 
@@ -28,32 +33,33 @@ export class ConfigVersionsService {
     }
 
     async delete(service: string): Promise<ConfigVersionsDocument> {
-        const config = await this.configVersionsModel.findOne({service: service});
+        const config: ConfigVersionsDocument = await this.configVersionsModel.findOne({service: service});
         if (!config) {
             throw new BadRequestException('Config not found');
         }
 
         const curDate: Date = new Date();
-        const difference: number = (curDate.getTime() - config.lastUpdate.getTime()) / (1000 * 3600);
-        console.log(difference)
-        if (difference < 24) {
+        const isUsed: boolean = curDate.getTime() > config.expireTime.getTime();
+        if (!isUsed) {
             throw new BadRequestException('Currently config is used');
         }
         return this.configVersionsModel.findOneAndDelete({service: service});
     }
 
     async update(configDto: ConfigDto): Promise<ConfigVersionsDocument> {
-        let configVersion = await this.configVersionsModel.findOne({service: configDto.service}).exec();
-        if (!configVersion) {
+        let configVersionDoc: ConfigVersionsDocument = await this.configVersionsModel.findOne({service: configDto.service}).exec();
+        if (!configVersionDoc) {
             throw new NotFoundException('Config not found');
         }
 
         let config: Config = await this.configService.create(configDto);
-        configVersion.currentVersion++;
-        config.version = configVersion.currentVersion;
-        configVersion.lastUpdate = new Date();
-        configVersion.configs.push(config);
-        return this.configVersionsModel.findOneAndUpdate({service: configDto.service}, configVersion, { new: true });
+        configVersionDoc.currentVersion++;
+        config.version = configVersionDoc.currentVersion;
+
+        this.setExpireTime(configVersionDoc);
+        
+        configVersionDoc.configs.push(config);
+        return this.configVersionsModel.findOneAndUpdate({service: configDto.service}, configVersionDoc, { new: true });
     }
 
     async findLastServiceConfig(service: string): Promise<Config> 
@@ -84,7 +90,13 @@ export class ConfigVersionsService {
             throw new NotFoundException('Config not found');
         }
 
-        configVersion.lastUpdate = new Date();
+        this.setExpireTime(configVersion);
+
         return configVersion.save();
+    }
+
+    private setExpireTime(configVersions: ConfigVersionsDocument) {
+        const expireTime: number = new Date().getTime() + this.expirationTime;
+        configVersions.expireTime.setTime(expireTime);
     }
 }

@@ -3,7 +3,7 @@ import { Mixed } from 'mongoose';
 import { ConfigDto } from 'src/config/config.dto';
 import { ConfigVersionsDocument } from './config-versions.schema';
 import { ConfigVersionsService } from './config-versions.service';
-import * as mapper from "src/mapper/mapper"
+import * as mapper from "src/utils/mapper"
 
 @Controller('config')
 export class ConfigVersionsController {
@@ -29,8 +29,11 @@ export class ConfigVersionsController {
 
     @Post()
     async create(@Body() configDto: ConfigDto): Promise<ConfigVersionsDocument> {
-        if (!configDto.service || !configDto.data) {
+        if (!configDto.service) {
             throw new BadRequestException('Service not specified');
+        }
+        if (!configDto.data) {
+            throw new BadRequestException('Data not specified');
         }
 
         return await this.configVersionsService.create(configDto);

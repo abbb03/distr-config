@@ -33,8 +33,9 @@ export class ConfigVersionsService {
             throw new BadRequestException('Config not found');
         }
 
-        const curDate = new Date();
-        const difference = (config.lastUpdate.getTime() - curDate.getTime()) / (1000 * 3600);
+        const curDate: Date = new Date();
+        const difference: number = (curDate.getTime() - config.lastUpdate.getTime()) / (1000 * 3600);
+        console.log(difference)
         if (difference < 24) {
             throw new BadRequestException('Currently config is used');
         }
@@ -85,9 +86,5 @@ export class ConfigVersionsService {
 
         configVersion.lastUpdate = new Date();
         return configVersion.save();
-    }
-
-    async findAllConfigVersions(): Promise<ConfigVersionsDocument[]> {
-        return this.configVersionsModel.find();
     }
 }

@@ -1,5 +1,4 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import mongoose from "mongoose";
 import { Config, ConfigSchema } from "../config/config.schema";
 
 export type ConfigVersionsDocument = ConfigVersions & Document;

@@ -6,6 +6,6 @@ export const configStub = (): Config => {
             name: 'testname',
             isTest: true
         },
-        version: 5
+        version: 1
     }
 }

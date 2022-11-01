@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import * as utils from "src/utils/toMillis";
+import * as utils from "../utils/toMillis";
 import { Config, ConfigSchema } from "../config/config.schema";
 
 export type ConfigVersionsDocument = ConfigVersions & Document;

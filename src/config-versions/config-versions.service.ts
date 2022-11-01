@@ -30,7 +30,7 @@ export class ConfigVersionsService {
         return configVersions.save();
     }
 
-    async delete(service: string): Promise<ConfigVersionsDocument> {
+    async delete(service: string): Promise<ConfigVersions> {
         const config: ConfigVersionsDocument = await this.configVersionsModel.findOne({service: service});
         if (!config) {
             throw new BadRequestException('Config not found');
@@ -44,7 +44,7 @@ export class ConfigVersionsService {
         return this.configVersionsModel.findOneAndDelete({service: service});
     }
 
-    async update(configDto: ConfigDto): Promise<ConfigVersionsDocument> {
+    async update(configDto: ConfigDto): Promise<ConfigVersions> {
         let configVersionDoc: ConfigVersionsDocument = await this.configVersionsModel.findOne({service: configDto.service}).exec();
         if (!configVersionDoc) {
             throw new NotFoundException('Config not found');
@@ -60,7 +60,7 @@ export class ConfigVersionsService {
 
     async findLastServiceConfig(service: string): Promise<Config> 
     {
-        const res: ConfigVersionsDocument = await this.findConfigVersionsDocument(service);
+        const res: ConfigVersions = await this.findConfigVersionsDocument(service);
         return res.configs.pop();
     }
 
@@ -75,11 +75,11 @@ export class ConfigVersionsService {
     }
 
     async findAllServiceConfigs(service: string): Promise<Config[]> {
-        let res: ConfigVersionsDocument = await this.findConfigVersionsDocument(service);
+        let res: ConfigVersions = await this.findConfigVersionsDocument(service);
         return res.configs;
     }
 
-    async findConfigVersionsDocument(service: string): Promise<ConfigVersionsDocument> {
+    async findConfigVersionsDocument(service: string): Promise<ConfigVersions> {
         let configVersion: ConfigVersionsDocument = await this.configVersionsModel.findOne({service: service}).exec();
         if (!configVersion) {
             throw new NotFoundException('Config not found');

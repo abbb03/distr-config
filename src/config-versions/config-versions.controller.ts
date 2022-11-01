@@ -1,8 +1,8 @@
 import { BadRequestException, Body, Controller, Delete, Get, Post, Put, Query, Req } from '@nestjs/common';
-import { ConfigDto } from 'src/config/config.dto';
+import { ConfigDto } from '../config/config.dto';
 import { ConfigVersions, ConfigVersionsDocument } from './config-versions.schema';
 import { ConfigVersionsService } from './config-versions.service';
-import * as mapper from "src/utils/mapper";
+import * as mapper from "../utils/mapper";
 
 @Controller('config')
 export class ConfigVersionsController {
@@ -22,7 +22,7 @@ export class ConfigVersionsController {
     }
 
     @Put()
-    async update(@Body() configDto: ConfigDto): Promise<ConfigVersionsDocument> {
+    async update(@Body() configDto: ConfigDto): Promise<ConfigVersions> {
         return await this.configVersionsService.update(configDto);
     }
 
@@ -39,7 +39,7 @@ export class ConfigVersionsController {
     }
 
     @Delete()
-    async delete(@Query('service') service: string): Promise<ConfigVersionsDocument> {
+    async delete(@Query('service') service: string): Promise<ConfigVersions> {
         return await this.configVersionsService.delete(service);
     }
 }

@@ -5,31 +5,29 @@ import { ConfigVersions, ConfigVersionsDocument } from "src/config-versions/conf
 import { ConfigDto } from "src/config/config.dto";
 import { Config } from "src/config/config.schema";
 import { ConfigService } from "src/config/config.service";
-import { hoursToMillis } from "src/utils/toMillis";
 
 @Injectable()
 export class ConfigVersionsService {
-    private readonly expirationTime: number = hoursToMillis(24);
-
     constructor(
         @InjectModel(ConfigVersions.name) private configVersionsModel: Model<ConfigVersionsDocument>,
         private readonly configService: ConfigService,
     ) {}
 
-    async create(configDto: ConfigDto): Promise<ConfigVersionsDocument> {
+    async create(configDto: ConfigDto): Promise<ConfigVersions> {
         const find = await this.configVersionsModel.findOne({service: configDto.service});
         if (find) {
-            throw new BadRequestException('The config for this service already exists')
+            throw new BadRequestException('The config for this service already exists');
         }
 
-        let configVersions: ConfigVersionsDocument = new this.configVersionsModel();
-        let config: Config = await this.configService.create(configDto);
-        this.setExpireTime(configVersions);
-        
-        configVersions.service = configDto.service;
-        configVersions.configs.push(config);
+        const config: Config = await this.configService.create(configDto);
 
-        return await (await this.configVersionsModel.create(configVersions)).save();
+        const configVersions = new this.configVersionsModel({
+            service: configDto.service,
+        });
+        configVersions.configs.push(config);
+        configVersions.updateExpireTime();
+
+        return configVersions.save();
     }
 
     async delete(service: string): Promise<ConfigVersionsDocument> {
@@ -39,7 +37,7 @@ export class ConfigVersionsService {
         }
 
         const curDate: Date = new Date();
-        const isUsed: boolean = curDate.getTime() > config.expireTime.getTime();
+        const isUsed: boolean = curDate.getTime() > config.expireDate.getTime();
         if (!isUsed) {
             throw new BadRequestException('Currently config is used');
         }
@@ -51,22 +49,19 @@ export class ConfigVersionsService {
         if (!configVersionDoc) {
             throw new NotFoundException('Config not found');
         }
-
         let config: Config = await this.configService.create(configDto);
-        configVersionDoc.currentVersion++;
+        configVersionDoc.incVersion();
         config.version = configVersionDoc.currentVersion;
-
-        this.setExpireTime(configVersionDoc);
-        
         configVersionDoc.configs.push(config);
+        configVersionDoc.updateExpireTime();
+        
         return this.configVersionsModel.findOneAndUpdate({service: configDto.service}, configVersionDoc, { new: true });
     }
 
     async findLastServiceConfig(service: string): Promise<Config> 
     {
         const res: ConfigVersionsDocument = await this.findConfigVersionsDocument(service);
-        const configLen: number = res.configs.length;
-        return res.configs[configLen - 1];
+        return res.configs.pop();
     }
 
     async findOneByVersion(service: string, version: number): Promise<Config> {
@@ -85,18 +80,12 @@ export class ConfigVersionsService {
     }
 
     async findConfigVersionsDocument(service: string): Promise<ConfigVersionsDocument> {
-        let configVersion = await this.configVersionsModel.findOne({service: service}).exec();
+        let configVersion: ConfigVersionsDocument = await this.configVersionsModel.findOne({service: service}).exec();
         if (!configVersion) {
             throw new NotFoundException('Config not found');
         }
 
-        this.setExpireTime(configVersion);
-
-        return configVersion.save();
-    }
-
-    private setExpireTime(configVersions: ConfigVersionsDocument) {
-        const expireTime: number = new Date().getTime() + this.expirationTime;
-        configVersions.expireTime.setTime(expireTime);
+        configVersion.updateExpireTime();
+        return configVersion;
     }
 }

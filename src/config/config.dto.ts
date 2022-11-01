@@ -6,5 +6,5 @@ export class ConfigDto {
     service: string;
 
     @Prop({ type: mongoose.Schema.Types.Mixed, required: true })
-    data: Mixed;
+    data: object;
 }

@@ -1,16 +1,15 @@
 import { BadRequestException, Body, Controller, Delete, Get, Post, Put, Query, Req } from '@nestjs/common';
-import { Mixed } from 'mongoose';
 import { ConfigDto } from 'src/config/config.dto';
-import { ConfigVersionsDocument } from './config-versions.schema';
+import { ConfigVersions, ConfigVersionsDocument } from './config-versions.schema';
 import { ConfigVersionsService } from './config-versions.service';
-import * as mapper from "src/utils/mapper"
+import * as mapper from "src/utils/mapper";
 
 @Controller('config')
 export class ConfigVersionsController {
     constructor(private configVersionsService: ConfigVersionsService) {}
 
     @Get()
-    async find(@Query('service') service: string, @Query('v') version: number): Promise<Mixed> 
+    async find(@Query('service') service: string, @Query('v') version: number): Promise<object> 
     {
         if (!service) {
             throw new BadRequestException('Service not specified');
@@ -28,7 +27,7 @@ export class ConfigVersionsController {
     }
 
     @Post()
-    async create(@Body() configDto: ConfigDto): Promise<ConfigVersionsDocument> {
+    async create(@Body() configDto: ConfigDto): Promise<ConfigVersions> {
         if (!configDto.service) {
             throw new BadRequestException('Service not specified');
         }

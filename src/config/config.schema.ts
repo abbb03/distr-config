@@ -6,7 +6,7 @@ export type ConfigDocument = Config & Document;
 @Schema()
 export class Config {
     @Prop({ required: true, type: mongoose.Schema.Types.Mixed })
-    data: Mixed;
+    data: object;
 
     @Prop({ type: Number, default: 1})
     version: number;

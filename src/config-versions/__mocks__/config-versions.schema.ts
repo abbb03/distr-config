@@ -26,13 +26,26 @@ export class ConfigVersions {
 
 export const ConfigVersionsModel = {
     findOne: jest.fn((filter: filterQuery) => {
-        if (filter.service === configDtoStub().service) {
+        if (filter.service !== configDtoStub().service) {
             return undefined;
         }
     
         return configVersionsStub();
     }),
+
+    findOneAndDelete: jest.fn((filter: filterQuery) => {
+        return configVersionsStub();
+    }),
+
     create: jest.fn((filter: filterQuery) => {
+        return configVersionsStub();
+    }),
+
+    delete: jest.fn((service: string) => {
+        if (service !== configVersionsStub().service) {
+            return undefined;
+        }
+
         return configVersionsStub();
     }),
 }

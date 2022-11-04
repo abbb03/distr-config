@@ -6,5 +6,6 @@ export const configVersionsStub = (): ConfigVersions => {
     cv.configs = [configStub()];
     cv.service = 'Test';
     cv.currentVersion = 1;
+    cv.expireDate = new Date(2022, 2, 2);
     return cv;
 }

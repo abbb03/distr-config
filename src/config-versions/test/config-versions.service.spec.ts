@@ -7,11 +7,12 @@ import { configVersionsStub } from './stubs/config-versions.stub';
 import { ConfigVersionsService } from '../config-versions.service';
 import { configDtoStub } from '../../config/test/stubs/config.dto.stub';
 import { ConfigVersionsModel } from '../__mocks__/config-versions.schema';
+import { BadRequestException } from '@nestjs/common';
 
 jest.mock('../../config/config.service');
 jest.mock('../config-versions.schema');
 
-describe('UsersRepository', () => {
+describe('ConfigVersionsService', () => {
     let mockConfigVersionsModel: Model<ConfigVersionsDocument>;
     let mockConfigService: ConfigService;
     let configVersionsService: ConfigVersionsService;
@@ -42,25 +43,51 @@ describe('UsersRepository', () => {
 
     describe('create', () => {
         describe('when create is called', () => {
-            const cv = configVersionsStub();
             let configVersion;
+            let configDto = configDtoStub();
+            configDto.service = 'Exists';
 
             beforeEach(async () => {
-                configVersion = await configVersionsService.create(configDtoStub());
+                configVersion = await configVersionsService.create(configDto);
             });
 
-            test('should call a configVersion findOne function', async () => {
-                expect(mockConfigVersionsModel.findOne).toBeCalledWith({service: configDtoStub().service});
+            test('should call a configVersionModel findOne function', async () => {
+                expect(mockConfigVersionsModel.findOne).toBeCalledWith({service: configDto.service});
             });
 
-            test('shoul call a configVersion create function', async () => {
-                expect(mockConfigVersionsModel.create).toBeCalledWith({service: configDtoStub().service});
-            })
+            test('should throw a BadRequestException if configVersion already exists', async () => {
+                expect(configVersionsService.create(configDtoStub())).rejects.toThrow(BadRequestException);
+            });
+
+            test('should call a configService create function', async () => {
+                expect(mockConfigService.create).toBeCalledWith(configDto);
+            });
+
+            test('should call a configVersionModel create function', async () => {
+                expect(mockConfigVersionsModel.create).toBeCalledWith({service: configDto.service});
+            });
 
             test('should create a configVersion doc', async () => {
-                const res = await configVersionsService.create(configDtoStub());
-                expect(res).toStrictEqual(configVersionsStub());
+                expect(configVersion).toEqual(configVersionsStub());
             });
         });
+
+        describe('delete', () => {
+            describe('when delete is called', () => {
+                let configVersion;
+
+                beforeEach(async () => {
+                    configVersion = await configVersionsService.delete(configDtoStub().service);
+                });
+    
+                test('should call a configVersionModel findOne function', async () => {
+                    expect(mockConfigVersionsModel.findOne).toBeCalledWith({service: configDtoStub().service});
+                });
+    
+                test('should throw a BadRequestException if configVersion doesn\'t exists', async () => {
+                    expect(configVersionsService.delete('Doesnt\'t exists')).rejects.toThrow(BadRequestException);
+                });
+            });
+        }); 
     });
 });

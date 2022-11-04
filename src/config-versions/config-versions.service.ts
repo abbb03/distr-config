@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { ConfigVersions, ConfigVersionsDocument } from "src/config-versions/config-versions.schema";
-import { ConfigDto } from "src/config/config.dto";
-import { Config } from "src/config/config.schema";
-import { ConfigService } from "src/config/config.service";
+import { ConfigVersions, ConfigVersionsDocument } from "./config-versions.schema";
+import { ConfigDto } from "../config/config.dto";
+import { Config } from "../config/config.schema";
+import { ConfigService } from "../config/config.service";
 
 @Injectable()
 export class ConfigVersionsService {
@@ -21,12 +21,10 @@ export class ConfigVersionsService {
 
         const config: Config = await this.configService.create(configDto);
 
-        const configVersions = new this.configVersionsModel({
-            service: configDto.service,
-        });
+        const configVersions = await this.configVersionsModel.create({service: configDto.service });
         configVersions.configs.push(config);
         configVersions.updateExpireTime();
-
+        configVersions.markModified('expireDate');
         return configVersions.save();
     }
 
@@ -80,7 +78,7 @@ export class ConfigVersionsService {
     }
 
     async findConfigVersionsDocument(service: string): Promise<ConfigVersions> {
-        let configVersion: ConfigVersionsDocument = await this.configVersionsModel.findOne({service: service}).exec();
+        let configVersion: ConfigVersions = await this.configVersionsModel.findOne({service: service}).exec();
         if (!configVersion) {
             throw new NotFoundException('Config not found');
         }

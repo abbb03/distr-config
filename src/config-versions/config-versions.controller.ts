@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, Post, Put, Query, Req } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Patch, Post, Put, Query, Req } from '@nestjs/common';
 import { ConfigDto } from '../config/config.dto';
 import { ConfigVersions, ConfigVersionsDocument } from './config-versions.schema';
 import { ConfigVersionsService } from './config-versions.service';
@@ -21,7 +21,7 @@ export class ConfigVersionsController {
         return mapper.toConfigData(await this.configVersionsService.findLastServiceConfig(service));
     }
 
-    @Put()
+    @Patch()
     async update(@Body() configDto: ConfigDto): Promise<ConfigVersions> {
         return await this.configVersionsService.update(configDto);
     }

@@ -30,6 +30,12 @@ export class ConfigVersions {
     public get currentVersion(): number{
         return this._currentVersion;
     }
+
+    public set currentVersion(version: number) {
+        if (!this._currentVersion) {
+            this._currentVersion = version;
+        }
+    }
 }
 
 export const ConfigVersionsSchema = SchemaFactory.createForClass(ConfigVersions);

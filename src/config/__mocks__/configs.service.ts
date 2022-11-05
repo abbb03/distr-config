@@ -1,5 +1,5 @@
 import { configStub } from '../test/stubs/config.stub';
 
-export const ConfigService = jest.fn().mockReturnValue({
+export const ConfigsService = jest.fn().mockReturnValue({
     create: jest.fn().mockReturnValue(configStub())
 });

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Config, ConfigSchema } from './config.schema';
-import { ConfigService } from './config.service';
+import { ConfigsService } from './configs.service';
 
 @Module({
     imports: [
@@ -13,7 +13,7 @@ import { ConfigService } from './config.service';
             }
         }])
     ],
-    providers: [ConfigService],
-    exports: [ConfigService]
+    providers: [ConfigsService],
+    exports: [ConfigsService]
 })
 export class ConfigModule {}

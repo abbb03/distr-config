@@ -4,13 +4,13 @@ import { Model } from 'mongoose';
 import { ConfigVersions, ConfigVersionsDocument } from './config-versions.schema';
 import { ConfigDto } from '../config/config.dto';
 import { Config } from '../config/config.schema';
-import { ConfigService } from '../config/config.service';
+import { ConfigsService } from '../config/configs.service';
 
 @Injectable()
 export class ConfigVersionsService {
     constructor(
         @InjectModel(ConfigVersions.name) private configVersionsModel: Model<ConfigVersionsDocument>,
-        private readonly configService: ConfigService,
+        private readonly configService: ConfigsService,
     ) {}
 
     async create(configDto: ConfigDto): Promise<ConfigVersions> {

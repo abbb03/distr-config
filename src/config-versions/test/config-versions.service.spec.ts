@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ConfigVersions, ConfigVersionsDocument } from '../config-versions.schema';
-import { ConfigService } from '../../config/config.service';
+import { ConfigsService } from '../../config/configs.service';
 import { configVersionsStub } from './stubs/config-versions.stub';
 import { ConfigVersionsService } from '../config-versions.service';
 import { configDtoStub } from '../../config/test/stubs/config.dto.stub';
@@ -12,18 +12,18 @@ import { ConfigDto } from '../../config/config.dto';
 import { Config } from '../../config/config.schema';
 import { configStub } from '../../config/test/stubs/config.stub';
 
-jest.mock('../../config/config.service');
+jest.mock('../../config/configs.service');
 jest.mock('../config-versions.schema');
 
 describe('ConfigVersionsService', () => {
     let mockConfigVersionsModel: Model<ConfigVersionsDocument>;
-    let mockConfigService: ConfigService;
+    let mockConfigsService: ConfigsService;
     let configVersionsService: ConfigVersionsService;
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
         providers: [
-            ConfigService,
+            ConfigsService,
             { 
                 provide: getModelToken(ConfigVersions.name), 
                 useValue: ConfigVersionsModel,
@@ -33,14 +33,14 @@ describe('ConfigVersionsService', () => {
         }).compile();
 
         mockConfigVersionsModel = module.get<Model<ConfigVersionsDocument>>(getModelToken(ConfigVersions.name));
-        mockConfigService = module.get<ConfigService>(ConfigService);
+        mockConfigsService = module.get<ConfigsService>(ConfigsService);
         configVersionsService = module.get<ConfigVersionsService>(ConfigVersionsService);
         jest.clearAllMocks();
     });
 
     test('should be defined', () => {
         expect(mockConfigVersionsModel).toBeDefined();
-        expect(mockConfigService).toBeDefined();
+        expect(mockConfigsService).toBeDefined();
         expect(configVersionsService).toBeDefined();
     });
 
@@ -61,8 +61,8 @@ describe('ConfigVersionsService', () => {
                 expect(configVersionsService.create(configDtoStub())).rejects.toThrow(BadRequestException);
             });
 
-            test('should call a configService create function', async () => {
-                expect(mockConfigService.create).toBeCalledWith(configDto);
+            test('should call a ConfigsService create function', async () => {
+                expect(mockConfigsService.create).toBeCalledWith(configDto);
             });
 
             test('should call a configVersionModel create function', async () => {
@@ -117,8 +117,8 @@ describe('ConfigVersionsService', () => {
                 expect(configVersionsService.update(configDtoStub('Doesn\'t exists'))).rejects.toThrow(NotFoundException);
             });
 
-            test('should call a configService create function', async () => {
-                expect(mockConfigService.create).toBeCalledWith(configDtoStub());
+            test('should call a ConfigsService create function', async () => {
+                expect(mockConfigsService.create).toBeCalledWith(configDtoStub());
             });
 
             test('should return updated configVersions', async () => {

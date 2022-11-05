@@ -5,7 +5,7 @@ import { ConfigDto } from './config.dto';
 import { Config, ConfigDocument } from './config.schema';
 
 @Injectable()
-export class ConfigService {
+export class ConfigsService {
     constructor(@InjectModel(Config.name) private configModel: Model<ConfigDocument>) {}
 
     async create(configDto: ConfigDto): Promise<Config> {

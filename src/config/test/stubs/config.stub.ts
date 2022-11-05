@@ -1,4 +1,4 @@
-import { Config } from 'src/config/config.schema';
+import { Config } from '../../config.schema';
 
 export const configStub = (): Config => {
     return {

@@ -1,10 +1,10 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import { ConfigVersions, ConfigVersionsDocument } from "./config-versions.schema";
-import { ConfigDto } from "../config/config.dto";
-import { Config } from "../config/config.schema";
-import { ConfigService } from "../config/config.service";
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { ConfigVersions, ConfigVersionsDocument } from './config-versions.schema';
+import { ConfigDto } from '../config/config.dto';
+import { Config } from '../config/config.schema';
+import { ConfigService } from '../config/config.service';
 
 @Injectable()
 export class ConfigVersionsService {
@@ -14,7 +14,7 @@ export class ConfigVersionsService {
     ) {}
 
     async create(configDto: ConfigDto): Promise<ConfigVersions> {
-        const find = await this.configVersionsModel.findOne({service: configDto.service});
+        const find: ConfigVersionsDocument = await this.configVersionsModel.findOne({service: configDto.service});
         if (find) {
             throw new BadRequestException('The config for this service already exists');
         }
@@ -31,7 +31,7 @@ export class ConfigVersionsService {
     async delete(service: string): Promise<ConfigVersions> {
         const config: ConfigVersionsDocument = await this.configVersionsModel.findOne({service: service});
         if (!config) {
-            throw new BadRequestException('Config not found');
+            throw new NotFoundException('Config not found');
         }
 
         const curDate: Date = new Date();
@@ -43,10 +43,11 @@ export class ConfigVersionsService {
     }
 
     async update(configDto: ConfigDto): Promise<ConfigVersions> {
-        let configVersionDoc: ConfigVersionsDocument = await this.configVersionsModel.findOne({service: configDto.service}).exec();
+        let configVersionDoc: ConfigVersionsDocument = await this.configVersionsModel.findOne({service: configDto.service});
         if (!configVersionDoc) {
             throw new NotFoundException('Config not found');
         }
+
         let config: Config = await this.configService.create(configDto);
         configVersionDoc.incVersion();
         config.version = configVersionDoc.currentVersion;
@@ -66,7 +67,7 @@ export class ConfigVersionsService {
         let configs: Config[] = await this.findAllServiceConfigs(service);
         const config = configs.find(cfg => cfg.version == version);
         if (!config) {
-            throw new BadRequestException('Version not found');
+            throw new NotFoundException('Version not found');
         }
 
         return config;
@@ -78,7 +79,7 @@ export class ConfigVersionsService {
     }
 
     async findConfigVersionsDocument(service: string): Promise<ConfigVersions> {
-        let configVersion: ConfigVersions = await this.configVersionsModel.findOne({service: service}).exec();
+        let configVersion: ConfigVersions = await this.configVersionsModel.findOne({service: service});
         if (!configVersion) {
             throw new NotFoundException('Config not found');
         }

@@ -1,9 +1,9 @@
-import { ConfigDto } from "../../config.dto";
-import { configStub } from "./config.stub";
+import { ConfigDto } from '../../config.dto';
+import { configStub } from './config.stub';
 
-export const configDtoStub = (): ConfigDto => {
+export const configDtoStub = (service?: string): ConfigDto => {
     return {
-        service: 'Test',
+        service: service ? service : 'Test',
         data: configStub().data
     }
 }

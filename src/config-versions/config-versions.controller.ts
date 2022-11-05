@@ -2,7 +2,7 @@ import { BadRequestException, Body, Controller, Delete, Get, Patch, Post, Put, Q
 import { ConfigDto } from '../config/config.dto';
 import { ConfigVersions, ConfigVersionsDocument } from './config-versions.schema';
 import { ConfigVersionsService } from './config-versions.service';
-import * as mapper from "../utils/mapper";
+import * as mapper from '../utils/mapper';
 
 @Controller('config')
 export class ConfigVersionsController {

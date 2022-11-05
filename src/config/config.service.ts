@@ -8,9 +8,8 @@ import { Config, ConfigDocument } from './config.schema';
 export class ConfigService {
     constructor(@InjectModel(Config.name) private configModel: Model<ConfigDocument>) {}
 
-    async create(createConfig: ConfigDto): Promise<Config> {
-        let config: Config = new this.configModel();
-        config.data = createConfig.data;
+    async create(configDto: ConfigDto): Promise<Config> {
+        let config: Config = await this.configModel.create({data: configDto.data});
         return config;
     }
 }

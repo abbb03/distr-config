@@ -4,7 +4,7 @@ import { ConfigVersionsController } from './config-versions.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from 'src/config/config.module';
 import { ConfigVersions, ConfigVersionsSchema } from './config-versions.schema';
-import { handleE11000 } from 'src/config-versions/config.error-handler';
+import { handleError } from 'src/config-versions/config.error-handler';
 
 @Module({
     imports: [
@@ -13,10 +13,10 @@ import { handleE11000 } from 'src/config-versions/config.error-handler';
             name: ConfigVersions.name,
             useFactory: () => {
                 const schema = ConfigVersionsSchema;
-                schema.post('save', handleE11000);
+                schema.post('save', handleError);
                 return schema;
             }
-        }]),  
+        }]),
     ],
     providers: [ConfigVersionsService],
     controllers: [ConfigVersionsController],

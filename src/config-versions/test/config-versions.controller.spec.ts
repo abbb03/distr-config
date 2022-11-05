@@ -1,10 +1,10 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { ConfigVersionsService } from "../config-versions.service";
-import { ConfigVersionsController } from "../config-versions.controller";
-import { configStub } from "../../config/test/stubs/config.stub";
-import { BadRequestException } from "@nestjs/common";
-import { configDtoStub } from "../../config/test/stubs/config.dto.stub";
-import { configVersionsStub } from "./stubs/config-versions.stub";
+import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigVersionsService } from '../config-versions.service';
+import { ConfigVersionsController } from '../config-versions.controller';
+import { configStub } from '../../config/test/stubs/config.stub';
+import { BadRequestException } from '@nestjs/common';
+import { configDtoStub } from '../../config/test/stubs/config.dto.stub';
+import { configVersionsStub } from './stubs/config-versions.stub';
 
 jest.mock('../config-versions.service');
 

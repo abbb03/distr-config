@@ -3,6 +3,8 @@ import { ConfigDto } from '../config/config.dto';
 import { ConfigVersions, ConfigVersionsDocument } from './config-versions.schema';
 import { ConfigVersionsService } from './config-versions.service';
 import * as mapper from '../utils/mapper';
+import { ConfigVersionsDto } from './config-versions.dto';
+import { toConfigVersionsDto } from '../utils/mapper';
 
 @Controller('config')
 export class ConfigVersionsController {
@@ -22,17 +24,17 @@ export class ConfigVersionsController {
     }
 
     @Patch()
-    async update(@Body() configDto: ConfigDto): Promise<string> {
+    async update(@Body() configDto: ConfigDto): Promise<ConfigVersionsDto> {
         let res: ConfigVersions = await this.configVersionsService.update(configDto);
         if (!res) {
             throw new InternalServerErrorException();
         }
 
-        return 'Config for service ' + configDto.service + ' updated';
+        return toConfigVersionsDto(res);
     }
 
     @Post()
-    async create(@Body() configDto: ConfigDto): Promise<string> {
+    async create(@Body() configDto: ConfigDto): Promise<ConfigVersionsDto> {
         if (!configDto.service) {
             throw new BadRequestException('Service not specified');
         }
@@ -45,16 +47,16 @@ export class ConfigVersionsController {
             throw new InternalServerErrorException();
         }
 
-        return 'Config for service ' + configDto.service + ' created';
+        return toConfigVersionsDto(res);
     }
 
     @Delete()
-    async delete(@Query('service') service: string): Promise<string> {
+    async delete(@Query('service') service: string): Promise<ConfigVersionsDto> {
         let res: ConfigVersions = await this.configVersionsService.delete(service);
         if (!res) {
             throw new InternalServerErrorException();
         }
 
-        return 'Config for service ' + service + ' deleted';
+        return toConfigVersionsDto(res);
     }
 }

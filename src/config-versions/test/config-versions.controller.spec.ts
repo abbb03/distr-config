@@ -5,6 +5,8 @@ import { configStub } from '../../config/test/stubs/config.stub';
 import { BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { configDtoStub } from '../../config/test/stubs/config.dto.stub';
 import { configVersionsStub } from './stubs/config-versions.stub';
+import { ConfigVersionsDto } from '../config-versions.dto';
+import { configVersionsDtoStub } from './stubs/config-versions.dto.stub';
 
 jest.mock('../config-versions.service');
 
@@ -62,12 +64,12 @@ describe('ConfigVersionsController', () => {
 
     describe('update', () => {
         describe('when update is called', () => {
-            let expected: string = 'Config for service ' + configDtoStub().service + ' updated'
-            let result: string;
+            let expected: ConfigVersionsDto = configVersionsDtoStub();
+            let result: ConfigVersionsDto;
 
-            test('then it should return a config', async () => {
+            test('then it should return a configVersionsDto', async () => {
                 result = await configVersionsController.update(configDtoStub());
-                expect(result).toStrictEqual(expected);
+                expect(result).toEqual(expected);
             })
 
             test('then it should throw internal server error exception if query is undefined', async () => {
@@ -79,8 +81,8 @@ describe('ConfigVersionsController', () => {
 
     describe('create', () => {
         describe('when create is called', () => {
-            let expected: string = 'Config for service ' + configDtoStub().service + ' created'
-            let result: string;
+            let expected: ConfigVersionsDto = configVersionsDtoStub();
+            let result: ConfigVersionsDto;
 
             beforeEach(async () => {
                 result = await configVersionsController.create(configDtoStub());
@@ -90,8 +92,8 @@ describe('ConfigVersionsController', () => {
                 expect(mockConfigVersionsService.create).toBeCalledWith(configDtoStub());
             });
 
-            test('then it should return a config', async () => {
-                expect(result).toStrictEqual(expected);
+            test('then it should return a configVersionsDto', async () => {
+                expect(result).toEqual(expected);
             });
 
             test('then it should throw bad request exception if service is undefined', async () => {
@@ -115,12 +117,12 @@ describe('ConfigVersionsController', () => {
 
     describe('delete', () => {
         describe('when delete is called', () => {
-            let expected: string = 'Config for service ' + configDtoStub().service + ' deleted'
-            let result: string;
+            let expected: ConfigVersionsDto = configVersionsDtoStub();
+            let result: ConfigVersionsDto;
 
-            test('then it should return a deleted config', async () => {
+            test('then it should return a deleted configVersions', async () => {
                 result = await configVersionsController.delete('Test');
-                expect(result).toStrictEqual(expected);
+                expect(result).toEqual(expected);
             })
 
             test('then it should throw internal server error exception if query is undefined', async () => {

@@ -7,7 +7,9 @@
 ### Создание конфига:
 
 Запрос:  
-`curl -d "@data.json" -H "Content-Type: application/json" -X POST http://localhost:8080/config/`
+```sh
+curl -d "@data.json" -H "Content-Type: application/json" -X POST http://localhost:8080/config/
+```
 
 Ответ:
 ```json
@@ -25,7 +27,9 @@
 #### 1. Без указания версии
 
 Запрос:  
-`curl http://localhost:8080/config/?service=myservice`
+```sh
+curl http://localhost:8080/config/?service=myservice
+```
 
 Ответ:
 ```json
@@ -39,7 +43,9 @@
 #### 2. С указанием версии
 
 Запрос:  
-`curl http://localhost:8080/config/?service=myservice&v=1`
+```sh
+curl http://localhost:8080/config/?service=myservice&v=1
+```
 
 Ответ:
 ```json
@@ -52,7 +58,9 @@
 ### Обновление конфига:
 
 Запрос:  
-`curl -d "@test.json" -H "Content-Type: application/json" -X PATCH http://localhost:8080/config/`
+```sh
+curl -d "@test.json" -H "Content-Type: application/json" -X PATCH http://localhost:8080/config/
+```
 
 Ответ:
 ```json
@@ -68,7 +76,9 @@
 ### Удаление конфига:
 
 Запрос:  
-`curl -X DELETE http://localhost:8080/config/?service=myservice`
+```sh
+curl -X DELETE http://localhost:8080/config/?service=myservice
+```
 
 Ответ:
 ```json

@@ -12,7 +12,7 @@ services:
       - mongodb-gocloud
     volumes:
       - .:/usr/src/app
-      - /usr/src/app/node_modules
+      - ./node_modules:/usr/src/app/node_modules
 
   mongodb-gocloud:
     image: docker.io/bitnami/mongodb:5.0

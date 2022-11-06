@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, Patch, Post, Put, Query, Req } from '@nestjs/common';
+import { BadRequestException, Body, ClassSerializerInterceptor, Controller, Delete, Get, InternalServerErrorException, Patch, Post, Put, Query, Req, UseInterceptors } from '@nestjs/common';
 import { ConfigDto } from '../config/config.dto';
 import { ConfigVersions, ConfigVersionsDocument } from './config-versions.schema';
 import { ConfigVersionsService } from './config-versions.service';
@@ -22,24 +22,39 @@ export class ConfigVersionsController {
     }
 
     @Patch()
-    async update(@Body() configDto: ConfigDto): Promise<ConfigVersions> {
-        return await this.configVersionsService.update(configDto);
+    async update(@Body() configDto: ConfigDto): Promise<string> {
+        let res: ConfigVersions = await this.configVersionsService.update(configDto);
+        if (!res) {
+            throw new InternalServerErrorException();
+        }
+
+        return 'Config for service ' + configDto.service + ' updated';
     }
 
     @Post()
-    async create(@Body() configDto: ConfigDto): Promise<ConfigVersions> {
+    async create(@Body() configDto: ConfigDto): Promise<string> {
         if (!configDto.service) {
             throw new BadRequestException('Service not specified');
         }
         if (!configDto.data) {
             throw new BadRequestException('Data not specified');
         }
+        
+        const res: ConfigVersions = await this.configVersionsService.create(configDto);
+        if (!res) {
+            throw new InternalServerErrorException();
+        }
 
-        return await this.configVersionsService.create(configDto);
+        return 'Config for service ' + configDto.service + ' created';
     }
 
     @Delete()
-    async delete(@Query('service') service: string): Promise<ConfigVersions> {
-        return await this.configVersionsService.delete(service);
+    async delete(@Query('service') service: string): Promise<string> {
+        let res: ConfigVersions = await this.configVersionsService.delete(service);
+        if (!res) {
+            throw new InternalServerErrorException();
+        }
+
+        return 'Config for service ' + service + ' deleted';
     }
 }

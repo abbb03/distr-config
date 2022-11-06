@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as utils from '../utils/timeСonversion';
 import { Config, ConfigSchema } from '../config/config.schema';
 
+
 export type ConfigVersionsDocument = ConfigVersions & Document;
 
 @Schema()

@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigVersionsService } from '../config-versions.service';
 import { ConfigVersionsController } from '../config-versions.controller';
 import { configStub } from '../../config/test/stubs/config.stub';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { configDtoStub } from '../../config/test/stubs/config.dto.stub';
 import { configVersionsStub } from './stubs/config-versions.stub';
 
@@ -62,29 +62,36 @@ describe('ConfigVersionsController', () => {
 
     describe('update', () => {
         describe('when update is called', () => {
-            let config: object;
+            let expected: string = 'Config for service ' + configDtoStub().service + ' updated'
+            let result: string;
 
             test('then it should return a config', async () => {
-                config = await configVersionsController.update(configDtoStub());
-                expect(config).toStrictEqual(configVersionsStub());
+                result = await configVersionsController.update(configDtoStub());
+                expect(result).toStrictEqual(expected);
             })
+
+            test('then it should throw internal server error exception if query is undefined', async () => {
+                let wrongConfigDto = configDtoStub('Fail');
+                expect(configVersionsController.update(wrongConfigDto)).rejects.toThrow(InternalServerErrorException);
+            });
         })
     });
 
     describe('create', () => {
         describe('when create is called', () => {
-            let config: object;
+            let expected: string = 'Config for service ' + configDtoStub().service + ' created'
+            let result: string;
 
             beforeEach(async () => {
-                config = await configVersionsController.create(configDtoStub());
-            });
+                result = await configVersionsController.create(configDtoStub());
+            })
 
             test('then it should call create function of ConfigVersions service', async () => {
                 expect(mockConfigVersionsService.create).toBeCalledWith(configDtoStub());
             });
 
             test('then it should return a config', async () => {
-                expect(config).toStrictEqual(configVersionsStub());
+                expect(result).toStrictEqual(expected);
             });
 
             test('then it should throw bad request exception if service is undefined', async () => {
@@ -98,17 +105,27 @@ describe('ConfigVersionsController', () => {
                 wrongConfigDto.data = undefined;
                 expect(configVersionsController.create(wrongConfigDto)).rejects.toThrow(BadRequestException);
             });
+
+            test('then it should throw internal server error exception if query is undefined', async () => {
+                let wrongConfigDto = configDtoStub('Fail');
+                expect(configVersionsController.create(wrongConfigDto)).rejects.toThrow(InternalServerErrorException);
+            });
         })
     });
 
     describe('delete', () => {
         describe('when delete is called', () => {
-            let config: object;
+            let expected: string = 'Config for service ' + configDtoStub().service + ' deleted'
+            let result: string;
 
             test('then it should return a deleted config', async () => {
-                config = await configVersionsController.delete('Test');
-                expect(config).toStrictEqual(configVersionsStub());
+                result = await configVersionsController.delete('Test');
+                expect(result).toStrictEqual(expected);
             })
+
+            test('then it should throw internal server error exception if query is undefined', async () => {
+                expect(configVersionsController.delete('Fail')).rejects.toThrow(InternalServerErrorException);
+            });
         })
     });
 })
